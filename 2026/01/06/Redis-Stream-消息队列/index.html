@@ -20,16 +20,16 @@
   <title>Redis Stream 消息队列 - Eastshann</title>
 
   
-    <meta name="description" content="Redis StreamRedis Stream 主要用于消息队列（MQ，Message Queue）。与传统的 Pub&#x2F;Sub（发布订阅）那种“阅后即焚”的模式不同，Redis Stream 的持久化可以通过以下三个核心维度来体现：  1.消息的物理持久化 (RDB&#x2F;AOF) Redis Stream 的数据结构是作为 Redis Key 存储在内存中的。这意味着它直接受 R">
+    <meta name="description" content="持久化Redis Stream 主要用于消息队列（MQ，Message Queue）。与传统的 Pub&#x2F;Sub（发布订阅）那种“阅后即焚”的模式不同，Redis Stream 的持久化可以通过以下三个核心维度来体现：  1.消息的物理持久化 (RDB&#x2F;AOF)Redis Stream 的数据结构是作为 Redis Key 存储在内存中的。这意味着它直接受 Redis 自身的持久">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis Stream 消息队列">
 <meta property="og:url" content="http://example.com/2026/01/06/Redis-Stream-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">
 <meta property="og:site_name" content="Eastshann">
-<meta property="og:description" content="Redis StreamRedis Stream 主要用于消息队列（MQ，Message Queue）。与传统的 Pub&#x2F;Sub（发布订阅）那种“阅后即焚”的模式不同，Redis Stream 的持久化可以通过以下三个核心维度来体现：  1.消息的物理持久化 (RDB&#x2F;AOF) Redis Stream 的数据结构是作为 Redis Key 存储在内存中的。这意味着它直接受 R">
+<meta property="og:description" content="持久化Redis Stream 主要用于消息队列（MQ，Message Queue）。与传统的 Pub&#x2F;Sub（发布订阅）那种“阅后即焚”的模式不同，Redis Stream 的持久化可以通过以下三个核心维度来体现：  1.消息的物理持久化 (RDB&#x2F;AOF)Redis Stream 的数据结构是作为 Redis Key 存储在内存中的。这意味着它直接受 Redis 自身的持久">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/avatar.jpg">
 <meta property="article:published_time" content="2026-01-06T05:47:17.000Z">
-<meta property="article:modified_time" content="2026-01-06T05:55:21.331Z">
+<meta property="article:modified_time" content="2026-01-06T05:58:52.973Z">
 <meta property="article:author" content="Eastshann">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/images/avatar.jpg">
@@ -50,7 +50,7 @@
 
   
 
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eastshann","sameAs":[],"image":"/images/avatar.jpg"},"dateCreated":"2026-01-06T13:47:17+08:00","dateModified":"2026-01-06T13:55:21+08:00","datePublished":"2026-01-06T13:47:17+08:00","description":"","headline":"Redis Stream 消息队列","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2026/01/06/Redis-Stream-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"},"publisher":{"@type":"Organization","name":"Eastshann","sameAs":[],"image":"/images/avatar.jpg","logo":{"@type":"ImageObject","url":"/images/avatar.jpg"}},"url":"http://example.com/2026/01/06/Redis-Stream-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/","image":[]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Eastshann","sameAs":[],"image":"/images/avatar.jpg"},"dateCreated":"2026-01-06T13:47:17+08:00","dateModified":"2026-01-06T13:58:52+08:00","datePublished":"2026-01-06T13:47:17+08:00","description":"","headline":"Redis Stream 消息队列","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2026/01/06/Redis-Stream-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"},"publisher":{"@type":"Organization","name":"Eastshann","sameAs":[],"image":"/images/avatar.jpg","logo":{"@type":"ImageObject","url":"/images/avatar.jpg"}},"url":"http://example.com/2026/01/06/Redis-Stream-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/","image":[]}</script>
   
 </head>
 <body>
@@ -82,7 +82,7 @@
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
 <span class="sep"></span><a class="cap breadcrumb" href="/">文章</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2026-01-06T05:47:17.000Z">2026-01-06</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-01-06T05:55:21.331Z">2026-01-06</time></span></div></div></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2026-01-06T05:47:17.000Z">2026-01-06</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-01-06T05:58:52.973Z">2026-01-06</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -93,25 +93,22 @@
     </div>
     
   </div>
-  </div><article class="md-text content"><h1 id="Redis-Stream"><a href="#Redis-Stream" class="headerlink" title="Redis Stream"></a>Redis Stream</h1><p>Redis Stream 主要用于消息队列（MQ，Message Queue）。与传统的 Pub&#x2F;Sub（发布订阅）那种“阅后即焚”的模式不同，Redis Stream 的持久化可以通过以下三个核心维度来体现：</p>
+  </div><article class="md-text content"><h2 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h2><p>Redis Stream 主要用于消息队列（MQ，Message Queue）。与传统的 Pub&#x2F;Sub（发布订阅）那种“阅后即焚”的模式不同，Redis Stream 的持久化可以通过以下三个核心维度来体现：</p>
 <hr>
-<p>1.消息的物理持久化 (RDB&#x2F;AOF)</p>
-<p>Redis Stream 的数据结构是作为 <strong>Redis Key</strong> 存储在内存中的。这意味着它直接受 Redis 自身的持久化机制保护：</p>
+<h3 id="1-消息的物理持久化-RDB-AOF"><a href="#1-消息的物理持久化-RDB-AOF" class="headerlink" title="1.消息的物理持久化 (RDB&#x2F;AOF)"></a>1.消息的物理持久化 (RDB&#x2F;AOF)</h3><p>Redis Stream 的数据结构是作为 <strong>Redis Key</strong> 存储在内存中的。这意味着它直接受 Redis 自身的持久化机制保护：</p>
 <ul>
 <li><strong>AOF (Append Only File)：</strong> 每当你执行 <code>XADD</code> 写入一条消息时，Redis 会将该指令记录到 AOF 日志中。即使 Redis 宕机，重启后也会通过回放 AOF 恢复所有的消息。</li>
 <li><strong>RDB (Snapshot)：</strong> 定时将内存中的 Stream 数据生成快照保存到磁盘。</li>
 <li><strong>对比：</strong> Pub&#x2F;Sub 只是内存中的实时转发，不占用空间也不存入磁盘，一旦重启，未消费的消息彻底消失。</li>
 </ul>
-<p>2.消费进度的持久化 (Consumer Group Offset)</p>
-<p>这是 Redis Stream 作为 MQ 最强大的地方。它能记录<strong>每个消费者组看到哪儿了</strong>。</p>
+<h3 id="2-消费进度的持久化-Consumer-Group-Offset"><a href="#2-消费进度的持久化-Consumer-Group-Offset" class="headerlink" title="2.消费进度的持久化 (Consumer Group Offset)"></a>2.消费进度的持久化 (Consumer Group Offset)</h3><p>这是 Redis Stream 作为 MQ 最强大的地方。它能记录<strong>每个消费者组看到哪儿了</strong>。</p>
 <ul>
 <li><p><strong>状态存储：</strong> 消费者组的 <code>last_delivered_id</code>（最后交付 ID）是持久化的。</p>
 </li>
 <li><p><strong>体现：</strong> 如果你的消费者程序崩溃了，重启后只需再次连接，Redis 会告诉它从上次断开的位置继续消费，而不会丢失中间产生的消息。</p>
 </li>
 </ul>
-<p>3.消息确认与待处理列表 (PEL - Pending Entries List)</p>
-<p>edis Stream 保证消息“不丢失”不仅是靠存入磁盘，还靠<strong>可靠交付机制</strong>：</p>
+<h3 id="3-消息确认与待处理列表-PEL-Pending-Entries-List"><a href="#3-消息确认与待处理列表-PEL-Pending-Entries-List" class="headerlink" title="3.消息确认与待处理列表 (PEL - Pending Entries List)"></a>3.消息确认与待处理列表 (PEL - Pending Entries List)</h3><p>edis Stream 保证消息“不丢失”不仅是靠存入磁盘，还靠<strong>可靠交付机制</strong>：</p>
 <ul>
 <li><p><strong>PEL 机制：</strong> 当消费者读取消息但尚未发送 <code>XACK</code>（确认）时，Redis 会在内部的 PEL 列表中持久化记录这条消息。</p>
 </li>
@@ -119,7 +116,7 @@
 </li>
 </ul>
 <hr>
-<p>Redis Stream 的结构如下所示，它有一个消息链表，将所有加入的消息都串起来，每个消息都有一个唯一的 ID 和对应的内容：</p>
+<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><p>Redis Stream 的结构如下所示，它有一个消息链表，将所有加入的消息都串起来，每个消息都有一个唯一的 ID 和对应的内容：</p>
 <p><img src="/../images/Redis-Stream-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/en-us_image_0167982791.png" alt="Redis Stream 结构"></p>
 <p>每个 Stream 都有唯一的名称，它就是 Redis 的 key，在我们首次使用 xadd 指令追加消息时自动创建。</p>
 <p><strong>Consumer Group</strong> 是消费组，使用 XGROUP CREATE 命令创建，一个消费组有多个消费者（Consumer）。</p>
@@ -150,7 +147,7 @@
 
 
 
-<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-Stream"><span class="toc-text">Redis Stream</span></a></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-text">持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%B6%88%E6%81%AF%E7%9A%84%E7%89%A9%E7%90%86%E6%8C%81%E4%B9%85%E5%8C%96-RDB-AOF"><span class="toc-text">1.消息的物理持久化 (RDB&#x2F;AOF)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B6%88%E8%B4%B9%E8%BF%9B%E5%BA%A6%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96-Consumer-Group-Offset"><span class="toc-text">2.消费进度的持久化 (Consumer Group Offset)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%B6%88%E6%81%AF%E7%A1%AE%E8%AE%A4%E4%B8%8E%E5%BE%85%E5%A4%84%E7%90%86%E5%88%97%E8%A1%A8-PEL-Pending-Entries-List"><span class="toc-text">3.消息确认与待处理列表 (PEL - Pending Entries List)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%84"><span class="toc-text">结构</span></a></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
 </div></aside><div class='float-panel'>
   <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
